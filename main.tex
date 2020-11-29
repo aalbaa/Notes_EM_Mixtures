@@ -77,12 +77,12 @@
         \pdf{y; \mbs{\theta}} 
         &= \pdf{x, z; \mbs{\theta}}\\
         \label{eq:PDF x mid z X PMF z}
-        &= \pdf{x \mid z; \mbs{\theta}}\pdf{z; \mbs{\theta}}.        
+        &= \pdf{x \mid z; \mbs{\theta}}\pmf{z; \mbs{\theta}}.        
     \end{align}
     Plugging \eqref{eq:PDF x given z} and \eqref{eq:PMF z} into  \eqref{eq:PDF x mid z X PMF z} gives
     \begin{align}
         \pdf{x, z; \mbs{\theta}}  &=
-        \pdf{x \mid z; \mbs{\theta}}\pdf{z; \mbs{\theta}} \\
+        \pdf{x \mid z; \mbs{\theta}}\pmf{z; \mbs{\theta}} \\
         \label{eq:PDF x mid z X PMF z Expanded}
         &=
         \begin{cases}
@@ -109,7 +109,7 @@
     From \cite{hastie_elements_2009} and \cite{wasserman_all_2004}, the function to be maximized is $Q\left(\mbs{\theta}\mid\mbs{\theta}^{(j)}\right)$,\footnote{$\mbs{\theta}^{(j)}$ is the $j$th estimate of $\mbs{\theta}$.} which is the expectation of the log-likelihood of the complete data. That is,
     \begin{align}
         \label{eq:Q(theta|thetaj)}
-        Q(\mbs{\theta}\mid\mbs{\theta}^{(j)}) &= \expect[\rv{Y}]{\log \pdf{\rv{Y} ; \mbs{\theta}} \mid X, \mbs{\theta}^{(j)}}.
+        Q\left(\mbs{\theta}\mid\mbs{\theta}^{(j)}\right) &= \expect[\rv{Y}]{\log \pdf{\rv{Y} ; \mbs{\theta}} \mid X, \mbs{\theta}^{(j)}}.
     \end{align}
     The log-likelihood function of the complete data is given by
     \begin{align}
@@ -131,49 +131,49 @@
         &= \expect[\rv{Y}]{\log \pdf{\rv{Y} ; \mbs{\theta}} \mid X, \mbs{\theta}^{(j)}}\\
         &= \expect[\rv{Z}]{\log \pdf{\rv{X}, \rv{Z} ; \mbs{\theta}} \mid \rv{X}=X, \mbs{\theta}^{(j)}}\\
         &=
-        \sum_{i=1}^{n} \left(1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}^{(j)}_{1}} + \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}^{(j)}}
+        \sum_{i=1}^{n} \left(1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} + \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
         \nonumber\\&\qquad
-        +\sum_{i=1}^{n}\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log \pi_{1}^{(j)} + (1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}})\log\left( 1-\pi_{1}^{(j)} \right)\\
+        +\sum_{i=1}^{n}\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log \pi_{1} + (1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}})\log\left( 1-\pi_{1} \right)\\
         &=
         \sum_{i=1}^{n} \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}} \left( 
-            \log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}^{(j)}}
-            -\log \pdf[1]{{x}_{i}; \mbs{\lambda}^{(j)}_{1}}
+            \log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
+            -\log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}}
         \right)
         \nonumber\\&\qquad  
         +\sum_{i=1}^{n}
             \left(
-                \log \pi_{1}^{(j)} 
-                -\log\left( 1-\pi_{1}^{(j)}\right) 
+                \log \pi_{1} 
+                -\log\left( 1-\pi_{1}\right) 
             \right)
         \nonumber\\&\qquad        
         +\sum_{i=1}^{n} 
-            \log \pdf[1]{{x}_{i}; \mbs{\lambda}^{(j)}_{1}} +
-            \log\left( 1-\pi_{1}^{(j)}\right).
+            \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} +
+            \log\left( 1-\pi_{1}\right).
     \end{align}
     The expectation $\expect{\rv{z}_{i} \mid X, \mbs{\theta}^{(j)}}$ is simplified to $\expect[z_{i}]{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}$ 
     since
     \begin{align}
-        \pdf{z_{i}\mid X} 
-        &= \f{\pdf{X \mid z_{i}}\pdf{z_{i}}}{\pdf{X}}\\
-        &= \f{\pdf{x_{1}}\cdots\pdf{x_{i}\mid z_{i}}\cdots \pdf{x_{n}} \pdf{z_{i}}}{\pdf{x_{1}}\cdots\pdf{x_{i}}\cdots\pdf{x_{n}}}\\
-        &= \f{\pdf{x_{i}\mid z_{i}}\pdf{z_{i}}}{\pdf{x_{i}}}\\
-        &= \pdf{z_{i}\mid x_{i}},
+        \pmf{z_{i}\mid X} 
+        &= \f{\pdf{X \mid z_{i}}\pmf{z_{i}}}{\pdf{X}}\\
+        &= \f{\pdf{x_{1}}\cdots\pdf{x_{i}\mid z_{i}}\cdots \pdf{x_{n}} \pmf{z_{i}}}{\pdf{x_{1}}\cdots\pdf{x_{i}}\cdots\pdf{x_{n}}}\\
+        &= \f{\pdf{x_{i}\mid z_{i}}\pmf{z_{i}}}{\pdf{x_{i}}}\\
+        &= \pmf{z_{i}\mid x_{i}},
     \end{align}
     where the independence of $\rv{x}_{j}$ from $\rv{z}_{i}$ for $i\neq j$ was used.
     The expectation is therefore
     \begin{align}
         \expect{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}
         &=
-        \sum_{i=0}^{1}\f{\pdf{x,z;\mbs{\theta}}}{\pdf{x; \mbs{\theta}}}z_{i}\\
+        \sum_{i=0}^{1}\f{\pdf{x_{i},z;\mbs{\theta}^{(j)}}}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}z_{i}\\
         &=
-        \f{1}{\pdf{x; \mbs{\theta}}}\sum_{i=0}^{1}\pdf{x,z;\mbs{\theta}}z_{i}\\
+        \f{1}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}\sum_{i=0}^{1}\pdf{x_{i},z;\mbs{\theta}^{(j)}}z_{i}\\
         &=
-        \f{1}{\pdf{x; \mbs{\theta}^{(j)}}}\left( \pdf[1]{x; \mbs{\lambda}_{1}^{(j)}}\pi_{1}^{(j)}(0)\right.\nonumber\\&\qquad + \left.\pdf[2]{x; \mbs{\lambda}_{2}^{(j)}}(1-\pi_{1}^{(j)})(1) \right)\\
+        \f{1}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}\left( \pdf[1]{x_{i}; \mbs{\lambda}_{1}^{(j)}}\pi_{1}^{(j)}(0)\right.\nonumber\\&\qquad + \left.\pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}(1-\pi_{1}^{(j)})(1) \right)\\
         &=
         \f{
-            \pdf[2]{x; \mbs{\lambda}_{2}^{(j)}}\left(1-\pi_{1}^{(j)}\right)
+            \pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}\left(1-\pi_{1}^{(j)}\right)
         }{
-            \pi_{1}^{(j)}\pdf[1]{x; \mbs{\lambda}^{(j)}} + \left( 1-\pi_{1}^{(j)} \right)\pdf[2]{x; \mbs{\lambda}_{2}^{(j)}}
+            \pi_{1}^{(j)}\pdf[1]{x_{i}; \mbs{\lambda}^{(j)}} + \left( 1-\pi_{1}^{(j)} \right)\pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}
         }.
     \end{align}
     \bibliography{references}
