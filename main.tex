@@ -36,6 +36,10 @@
 
 % \allowdisplaybreaks
 
+% zhat is the estimated missing data
+\newcommand{\zhat}[2][{}]{\ifthenelse{\equal{#1}{}}{\hat{z}_{#2}}{\hat{z}_{#2}^{(#1)}}}
+
+
 \begin{document}
     \maketitle
     
@@ -131,6 +135,7 @@
         &= \expect[\rv{Y}]{\log \pdf{\rv{Y} ; \mbs{\theta}} \mid X, \mbs{\theta}^{(j)}}\\
         &= \expect[\rv{Z}]{\log \pdf{\rv{X}, \rv{Z} ; \mbs{\theta}} \mid \rv{X}=X, \mbs{\theta}^{(j)}}\\
         &=
+        \label{eq:Qtheta|thetaJ: split in params}
         \sum_{i=1}^{n} \left(1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} + \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
         \nonumber\\&\qquad
         +\sum_{i=1}^{n}\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log \pi_{1} + (1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}})\log\left( 1-\pi_{1} \right)\\
@@ -164,9 +169,9 @@
     \begin{align}
         \expect{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}
         &=
-        \sum_{i=0}^{1}\f{\pdf{x_{i},z;\mbs{\theta}^{(j)}}}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}z_{i}\\
+        \sum_{k=0}^{1}\f{\pdf{x_{i},z;\mbs{\theta}^{(j)}}}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}z_{k}\\
         &=
-        \f{1}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}\sum_{i=0}^{1}\pdf{x_{i},z;\mbs{\theta}^{(j)}}z_{i}\\
+        \f{1}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}\sum_{k=0}^{1}\pdf{x_{i},z;\mbs{\theta}^{(j)}}z_{k}\\
         &=
         \f{1}{\pdf{x_{i}; \mbs{\theta}^{(j)}}}\left( \pdf[1]{x_{i}; \mbs{\lambda}_{1}^{(j)}}\pi_{1}^{(j)}(0)\right.\nonumber\\&\qquad + \left.\pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}(1-\pi_{1}^{(j)})(1) \right)\\
         &=
@@ -176,6 +181,100 @@
             \pi_{1}^{(j)}\pdf[1]{x_{i}; \mbs{\lambda}^{(j)}} + \left( 1-\pi_{1}^{(j)} \right)\pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}
         }.
     \end{align}
+    Note that the expectation step does not require us to exploit the two PDFs $\pdf[i]{x; \mbs{\lambda}_{i}}$; just plug in the data and get an estimate of $\rv{z}_{i}$ for $i=1,\ldots, n$.
+
+    
+    \begin{blueBox}
+        From here onwards, the notation 
+        \begin{align}
+            \label{eq:xhat notation def}
+            \zhat[j]{i} &\coloneqq  
+            \expect{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}
+        \end{align}
+        will be used.
+    \end{blueBox}
+    \section{Maximization step}
+    Now that the missing data $\rv{z}_{i}$ is estimated in the expectation step, the next step is to estimate a new set of parameters $\mbs{\theta}^{(j+1)}$ using maximum likelihood (ML) estimator on the log-likelihood function of the complete \emph{estimated} data set $\hat{Y} = \left\{ X, \hat{Z}^{(j)} \right\}$. \footnote{Note that $\hat{Z}^{(j)} = \left\{ \zhat[j]{1},\ldots, \zhat[j]{n} \right\}$.}
+
+    Let the PDFs $\pdf[i]{x; \mbs{\lambda}_{i}}$ be exponentially distributed with parameter $\lambda_{i}$. Then, the PDFs can be written as
+    \begin{align}
+        \pdf[i]{x; \lambda_{i}} &= 
+        \begin{cases}
+            \lambda_{i}e^{-\lambda_{i} x}, & x\geq 0,\\
+            0, &x<0,
+        \end{cases}
+    \end{align}
+    for $i=1,2$. The parameters in this case are $\mbs{\theta} = \left\{ \lambda_{1}, \lambda_{2}, \pi_{1} \right\}$.
+
+    For the ease of reading, the notation \eqref{eq:xhat notation def} will be used to rewrite $Q\left( \mbs{\theta}\mid\mbs{\theta}^{(j)} \right)$ from \eqref{eq:Qtheta|thetaJ: split in params}. Then, 
+    \begin{align}
+        Q\left( \mbs{\theta} \mid \mbs{\theta}^{(j)} \right)
+        &=
+        \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} + \zhat[j]{i}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
+        \nonumber\\&\qquad
+        +\sum_{i=1}^{n}\zhat[j]{i}\log \pi_{1} + \left(1-\zhat[j]{i}\right)\log\left( 1-\pi_{1} \right)\\
+        &=
+        \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) \log \left( \lambda_{1}e^{-\lambda_{1} x_{i}} \right) + \zhat[j]{i}\log\left(\lambda_{2}e^{-\lambda_{2} x_{i}}\right)
+        \nonumber\\&\qquad
+        +\sum_{i=1}^{n}\zhat[j]{i}\log \pi_{1} + \left(1-\zhat[j]{i}\right)\log\left( 1-\pi_{1} \right)\\
+        &=
+        \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right)  \left( \log\lambda_{1} -\lambda_{1} x_{i} \right) + \zhat[j]{i}\left(\log\lambda_{2} -\lambda_{2} x_{i}\right)
+        \nonumber\\&\qquad
+        +\sum_{i=1}^{n}\zhat[j]{i}\log \pi_{1} + \left(1-\zhat[j]{i}\right)\log\left( 1-\pi_{1} \right).
+    \end{align}
+    The function $Q\left( \mbs{\theta}\mid \mbs{\theta}^{(j)} \right)$ is to be differentiated with respect to the parameters $\mbs{\theta}$ and be equated to zero in order to solve for the critical points.
+    \begin{align}
+        \pd{
+            Q\left( \mbs{\theta}\mid{\theta}^{(j)} \right)
+        }{
+            \lambda_{1}
+        }
+        &= 
+        \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right)  \left( \f{1}{\lambda_{1}}- x_{i} \right)\\
+        &= 
+        \f{1}{\lambda_{1}}\sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) 
+        -
+        \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) x_{i}.
+    \end{align}
+    Equating to partial derivative to zero and solving for $\lambda_{1}$ gives the next estimate
+    \begin{align}
+        \hat{\lambda}_{1}^{(j+1)} 
+        &= 
+        \f{
+            \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right)
+        }{
+            \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) x_{i}  
+        }.
+    \end{align}
+    The similar procedure can be done for $\lambda_{2}$ which gives the expression
+    \begin{align}
+        \hat{\lambda}_{2}^{(j+1)} 
+        &= 
+        \f{
+            \sum_{i=1}^{n} \zhat[j]{i}
+        }{
+            \sum_{i=1}^{n}\zhat[j]{i} x_{i}  
+        }.
+    \end{align}
+    Now, differentiate $Q\left(\mbs{\theta}\mid\mbs{\theta}^{(j)}\right)$ with respect to $\pi_{1}$.
+    \begin{align}
+        \pd{
+            Q\left( \mbs{\theta}\mid\mbs{\theta}^{(j)} \right)
+        }{
+            \pi_{1}
+        }
+        &=
+        \sum_{i=1}^{n}\zhat[j]{i}\f{1}{\pi_{1}} + \left(1-\zhat[j]{i}\right)\f{1}{ 1-\pi_{1}}\\
+        &=
+        \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n}\zhat[j]{i}\left( 1-\pi_{1} \right)+ \pi_{1}\left(1-\zhat[j]{i}\right)\\
+        &=
+        \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n}\left(\zhat[j]{i} - \pi_{1}\right).
+    \end{align}
+    Equating to $0$ and solving for $\pi_{1}$ gives the next estimate
+    \begin{align}
+        \hat{\pi}_{1}^{(j+1)} &= \f{1}{n}\sum_{i=1}^{n}\zhat[j]{i}.
+    \end{align}
+
     \bibliography{references}
     \bibliographystyle{plainnat}
 \end{document}
