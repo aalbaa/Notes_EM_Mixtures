@@ -1,0 +1,181 @@
+\documentclass{tufte-handout}
+\usepackage{amro-tufte}
+\usepackage{amro-common}
+
+\title{Expectation Maximization -- An Example}
+\author{Amro Al~Baali}
+
+\makeatletter
+\renewcommand{\maketitle}{%
+  \newpage
+  \global\@topnum\z@% prevent floats from being placed at the top of the page
+  \begingroup
+    \setlength{\parindent}{0pt}%
+    \setlength{\parskip}{4pt}%
+    \let\@@title\@empty
+    \let\@@author\@empty
+    \let\@@date\@empty
+    \ifthenelse{\boolean{@tufte@sfsidenotes}}{%
+      \gdef\@@title{\sffamily\LARGE\allcaps{\@title}\par}%
+      \gdef\@@author{\sffamily\Large\allcaps{\@author}\par}%
+      \gdef\@@date{\sffamily\Large\allcaps{\@date}\par}%
+    }{%
+      \gdef\@@title{\LARGE\itshape\centering\@title\par}%
+      \gdef\@@author{\Large\itshape\centering\@author\par}%
+      \gdef\@@date{\Large\itshape\centering\@date\par}%
+    }%
+    \@@title
+    \@@author
+    \@@date
+  \endgroup
+  \thispagestyle{plain}% suppress the running head
+  \tuftebreak% add some space before the text begins
+  \@afterindentfalse\@afterheading% suppress indentation of the next paragraph
+}
+\makeatother
+
+% \allowdisplaybreaks
+
+\begin{document}
+    \maketitle
+    
+    \section{Notations}
+    Let the observations be $X=\left\{ x_{1}, \ldots, x_{n} \right\}$ be the set of realizations of the random variable $\rv{x}\in\rnums$. Additionally, let $Z = \left\{ z_{1},\ldots, z_{n} \right\}$ be the set of realizations of $\rv{z}\in\left\{ 0,1 \right\}$ which is the ``missing'' data of the problem.\footnote{The data is ``missing'' in the sense that, if this data was available, then the problem would be significantly simplified.} The set of complete data is denoted by $Y = {X, Z}$.
+    Furthermore, let the two PDF that $\rv{x}$ is distributed from be denoted by $\pdf[1]{x; \mbs{\lambda}_{1}}$ and $\pdf[2]{x; \mbs{\lambda}_{2}}$, where $\mbs{\lambda}_{i}$ is the set of parameters for each of the two PDFs.
+
+    The set of unknown parameters are $\mbs{\theta} = \left\{ \mbs{\lambda}_{1}, \mbs{\lambda}_{2}, \pi_{1} \right\}$.
+
+    \section{Problem statement}
+    Let $\rv{x}\in\rnums$ be a random variable\footnote{In this document a single random variable will be used. It is possible to generalization to multivariate random variables.} that can be sampled from one of two distributions $\pdf[1]{x; \mbs{\lambda}_{1}}$ and $\pdf[2]{x; \mbs{\lambda}_{2}}$.\footnote{In this document, we'll assume that there are only two possible distributions but the idea generalizes to multiple distributions.}
+    Whether $\rv{x}$ will be sampled from $\pdf[1]{x; \mbs{\lambda}_{1}}$ or $\pdf[2]{x; \mbs{\lambda}_{2}}$ will depend on another random variable $\rv{z}\in\left\{ 0, 1 \right\}$. Specifically, the conditional PDF of $\rv{x}$ given $\rv{z}$ is
+    \begin{align}
+        \label{eq:PDF x given z}
+        \pdf{x\mid z; \mbs{\lambda} } &=
+        \begin{cases}
+            \pdf[1]{x; \mbs{\lambda}_{1}}, & z=0,\\
+            \pdf[2]{x; \mbs{\lambda}_{2}}, & z=1,
+        \end{cases}
+    \end{align}
+    where $\mbs{\lambda} = \{\mbs{\lambda}_{1}, \mbs{\lambda}_{2}\}$. Let the PMF of $\rv{z}$ be given by
+    \begin{align}
+        \label{eq:PMF z}
+        \pmf{z} &= 
+        \begin{cases}
+            \pi_{1}, & z=0,\\
+            1-\pi_{1}, & z=1,\\
+            0, & \text{otherwise}.
+        \end{cases}
+    \end{align}
+    The problem is to estimate the parameters $\mbs{\theta}$ without having known $\pi_{1}$. The set of unknown parameters will be denoted by $\mbs{\theta} = \left\{ \mbs{\lambda}, \pi_{1} \right\}$. 
+    % If the parameters $\mbs{\theta}$ were known, then the PDF of $\rv{x}$ would be given by
+    % \begin{align}
+    %     \pdf[x]{x; \mbs{\theta}} &= \pi_{1}\pdf[1]{x; \mbs{\lambda}_{1}} + (1-\pi_{1})\pdf[2]{x; \mbs{\lambda}_{2}}.
+    % \end{align}
+    \section{Doing ``the math''}
+    The PDF $\pdf{y; \mbs{\theta}}$ is needed in the expectation step. The PDF is given by
+    \begin{align}
+        \pdf{y; \mbs{\theta}} 
+        &= \pdf{x, z; \mbs{\theta}}\\
+        \label{eq:PDF x mid z X PMF z}
+        &= \pdf{x \mid z; \mbs{\theta}}\pdf{z; \mbs{\theta}}.        
+    \end{align}
+    Plugging \eqref{eq:PDF x given z} and \eqref{eq:PMF z} into  \eqref{eq:PDF x mid z X PMF z} gives
+    \begin{align}
+        \pdf{x, z; \mbs{\theta}}  &=
+        \pdf{x \mid z; \mbs{\theta}}\pdf{z; \mbs{\theta}} \\
+        \label{eq:PDF x mid z X PMF z Expanded}
+        &=
+        \begin{cases}
+            \pdf[1]{x; \mbs{\lambda}_{1}}\pi_{1}, & z=0,\\
+            \pdf[2]{x; \mbs{\lambda}_{2}}(1-\pi_{1}), & z=1,
+        \end{cases}
+    \end{align}
+    which can be rewritten\footnote{This may be confusing at first, by simply replace $z$ with $0$ or $1$ and the expression \eqref{eq:PDF x mid z X PMF z Expanded} will be exactly recovered.} as
+    \begin{align}
+        \pdf{x, z; \mbs{\theta}} 
+        &= 
+        \left(\pi_{1}\pdf[1]{x; \mbs{\lambda}_{1}}\right)^{1-z}\left( (1-\pi_{1})\pdf[2]{x; \mbs{\lambda}_{2}} \right)^{z}.
+    \end{align}
+    The marginal PDF on $\rv{x}$ is obtained by marginalizing out $\rv{z}$ from $\pdf{x, z;\mbs{\theta}}$ to give
+    \begin{align}
+        \pdf{x; \mbs{\theta}} &= \sum_{i=0}^{1}\pdf{x, z=i; \mbs{\theta}}\\
+        &= \pi_{1}\pdf[1]{x; \mbs{\theta}} + (1-\pi_{1})\pdf[2]{x; \mbs{\theta}}\\
+        \label{eq:PDF x given theta Expanded}
+        &= \pi_{1}\pdf[1]{x; \mbs{\lambda}_{1}} + (1-\pi_{1})\pdf[2]{x; \mbs{\lambda}_{2}}.
+    \end{align}
+
+    \section{The expectation step}
+    % References: \cite[Eq.~(8.43)]{hastie_elements_2009} and \cite[Sec.~9.13.4]{wasserman_all_2004}, 
+    From \cite{hastie_elements_2009} and \cite{wasserman_all_2004}, the function to be maximized is $Q\left(\mbs{\theta}\mid\mbs{\theta}^{(j)}\right)$,\footnote{$\mbs{\theta}^{(j)}$ is the $j$th estimate of $\mbs{\theta}$.} which is the expectation of the log-likelihood of the complete data. That is,
+    \begin{align}
+        \label{eq:Q(theta|thetaj)}
+        Q(\mbs{\theta}\mid\mbs{\theta}^{(j)}) &= \expect[\rv{Y}]{\log \pdf{\rv{Y} ; \mbs{\theta}} \mid X, \mbs{\theta}^{(j)}}.
+    \end{align}
+    The log-likelihood function of the complete data is given by
+    \begin{align}
+        \log \pdf{\rv{Y} ; \mbs{\theta}} 
+        &=
+        \sum_{i=1}^{n}
+        \log \left( \left(\pi_{1}\pdf[1]{\rv{x}_{i}; \mbs{\lambda}_{1}}\right)^{1-\rv{z}_{i}} \right.\nonumber\\&\qquad\cdot\left.\left( \left(1-\pi_{1}\right)\pdf[2]{\rv{x}_{i}; \mbs{\lambda}_{2}} \right)^{\rv{z}_{i}} \right) \\
+        &=
+        \sum_{i=1}^{n} (1-\rv{z}_{i})\left( \log \pi_{1}+ \log \pdf[1]{\rv{x}_{i}; \mbs{\lambda}_{1}} \right)\nonumber\\&\qquad
+        +\sum_{i=1}^{n}\rv{z}_{i}\left(\log\left( 1-\pi_{1} \right)  + \log\pdf[2]{\rv{x}_{i}; \mbs{\lambda}_{2}}\right)\\
+        &=
+        \sum_{i=1}^{n} (1-\rv{z}_{i}) \log \pdf[1]{\rv{x}_{i}; \mbs{\lambda}_{1}} + \rv{z}_{i}\log\pdf[2]{\rv{x}_{i}; \mbs{\lambda}_{2}}
+        \nonumber\\&\qquad
+        +\sum_{i=1}^{n}\rv{z}_{i}\log\left( 1-\pi_{1} \right) + (1-\rv{z}_{i})\log \pi_{1}.
+    \end{align}
+    The conditional expectation \eqref{eq:Q(theta|thetaj)} can then be expanded to give
+    \begin{align}
+        Q\left(\mbs{\theta}\mid\mbs{\theta}^{(j)}\right) 
+        &= \expect[\rv{Y}]{\log \pdf{\rv{Y} ; \mbs{\theta}} \mid X, \mbs{\theta}^{(j)}}\\
+        &= \expect[\rv{Z}]{\log \pdf{\rv{X}, \rv{Z} ; \mbs{\theta}} \mid \rv{X}=X, \mbs{\theta}^{(j)}}\\
+        &=
+        \sum_{i=1}^{n} \left(1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}^{(j)}_{1}} + \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}^{(j)}}
+        \nonumber\\&\qquad
+        +\sum_{i=1}^{n}\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log \pi_{1}^{(j)} + (1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}})\log\left( 1-\pi_{1}^{(j)} \right)\\
+        &=
+        \sum_{i=1}^{n} \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}} \left( 
+            \log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}^{(j)}}
+            -\log \pdf[1]{{x}_{i}; \mbs{\lambda}^{(j)}_{1}}
+        \right)
+        \nonumber\\&\qquad  
+        +\sum_{i=1}^{n}
+            \left(
+                \log \pi_{1}^{(j)} 
+                -\log\left( 1-\pi_{1}^{(j)}\right) 
+            \right)
+        \nonumber\\&\qquad        
+        +\sum_{i=1}^{n} 
+            \log \pdf[1]{{x}_{i}; \mbs{\lambda}^{(j)}_{1}} +
+            \log\left( 1-\pi_{1}^{(j)}\right).
+    \end{align}
+    The expectation $\expect{\rv{z}_{i} \mid X, \mbs{\theta}^{(j)}}$ is simplified to $\expect[z_{i}]{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}$ 
+    since
+    \begin{align}
+        \pdf{z_{i}\mid X} 
+        &= \f{\pdf{X \mid z_{i}}\pdf{z_{i}}}{\pdf{X}}\\
+        &= \f{\pdf{x_{1}}\cdots\pdf{x_{i}\mid z_{i}}\cdots \pdf{x_{n}} \pdf{z_{i}}}{\pdf{x_{1}}\cdots\pdf{x_{i}}\cdots\pdf{x_{n}}}\\
+        &= \f{\pdf{x_{i}\mid z_{i}}\pdf{z_{i}}}{\pdf{x_{i}}}\\
+        &= \pdf{z_{i}\mid x_{i}},
+    \end{align}
+    where the independence of $\rv{x}_{j}$ from $\rv{z}_{i}$ for $i\neq j$ was used.
+    The expectation is therefore
+    \begin{align}
+        \expect{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}
+        &=
+        \sum_{i=0}^{1}\f{\pdf{x,z;\mbs{\theta}}}{\pdf{x; \mbs{\theta}}}z_{i}\\
+        &=
+        \f{1}{\pdf{x; \mbs{\theta}}}\sum_{i=0}^{1}\pdf{x,z;\mbs{\theta}}z_{i}\\
+        &=
+        \f{1}{\pdf{x; \mbs{\theta}^{(j)}}}\left( \pdf[1]{x; \mbs{\lambda}_{1}^{(j)}}\pi_{1}^{(j)}(0)\right.\nonumber\\&\qquad + \left.\pdf[2]{x; \mbs{\lambda}_{2}^{(j)}}(1-\pi_{1}^{(j)})(1) \right)\\
+        &=
+        \f{
+            \pdf[2]{x; \mbs{\lambda}_{2}^{(j)}}\left(1-\pi_{1}^{(j)}\right)
+        }{
+            \pi_{1}^{(j)}\pdf[1]{x; \mbs{\lambda}^{(j)}} + \left( 1-\pi_{1}^{(j)} \right)\pdf[2]{x; \mbs{\lambda}_{2}^{(j)}}
+        }.
+    \end{align}
+    \bibliography{references}
+    \bibliographystyle{plainnat}
+\end{document}
