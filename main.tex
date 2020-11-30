@@ -138,22 +138,23 @@
         \label{eq:Qtheta|thetaJ: split in params}
         \sum_{i=1}^{n} \left(1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} + \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
         \nonumber\\&\qquad
-        +\sum_{i=1}^{n}\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log \pi_{1} + (1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}})\log\left( 1-\pi_{1} \right)\\
-        &=
-        \sum_{i=1}^{n} \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}} \left( 
-            \log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
-            -\log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}}
-        \right)
-        \nonumber\\&\qquad  
-        +\sum_{i=1}^{n}
-            \left(
-                \log \pi_{1} 
-                -\log\left( 1-\pi_{1}\right) 
-            \right)
-        \nonumber\\&\qquad        
-        +\sum_{i=1}^{n} 
-            \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} +
-            \log\left( 1-\pi_{1}\right).
+        +\sum_{i=1}^{n}\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\log\left( 1-\pi_{1}\right) + \left(1-\expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}}\right)\log \pi_{1}.
+        % \\
+        % &=
+        % \sum_{i=1}^{n} \expect{\rv{z}_{i}\mid X, \mbs{\theta}^{(j)}} \left( 
+        %     \log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
+        %     -\log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}}
+        % \right)
+        % \nonumber\\&\qquad  
+        % +\sum_{i=1}^{n}
+        %     \left(
+        %         \log \pi_{1} 
+        %         -\log\left( 1-\pi_{1}\right) 
+        %     \right)
+        % \nonumber\\&\qquad        
+        % +\sum_{i=1}^{n} 
+        %     \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} +
+        %     \log\left( 1-\pi_{1}\right).
     \end{align}
     The expectation $\expect{\rv{z}_{i} \mid X, \mbs{\theta}^{(j)}}$ is simplified to $\expect[z_{i}]{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}$ 
     since
@@ -212,15 +213,15 @@
         &=
         \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) \log \pdf[1]{{x}_{i}; \mbs{\lambda}_{1}} + \zhat[j]{i}\log\pdf[2]{{x}_{i}; \mbs{\lambda}_{2}}
         \nonumber\\&\qquad
-        +\sum_{i=1}^{n}\zhat[j]{i}\log \pi_{1} + \left(1-\zhat[j]{i}\right)\log\left( 1-\pi_{1} \right)\\
+        +\sum_{i=1}^{n}\zhat[j]{i}\log\left( 1-\pi_{1} \right) + \left(1-\zhat[j]{i}\right)\log\pi_{1}\\
         &=
         \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) \log \left( \lambda_{1}e^{-\lambda_{1} x_{i}} \right) + \zhat[j]{i}\log\left(\lambda_{2}e^{-\lambda_{2} x_{i}}\right)
         \nonumber\\&\qquad
-        +\sum_{i=1}^{n}\zhat[j]{i}\log \pi_{1} + \left(1-\zhat[j]{i}\right)\log\left( 1-\pi_{1} \right)\\
+        +\sum_{i=1}^{n}\zhat[j]{i}\log\left( 1-\pi_{1} \right)  + \left(1-\zhat[j]{i}\right)\log\pi_{1}\\
         &=
         \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right)  \left( \log\lambda_{1} -\lambda_{1} x_{i} \right) + \zhat[j]{i}\left(\log\lambda_{2} -\lambda_{2} x_{i}\right)
         \nonumber\\&\qquad
-        +\sum_{i=1}^{n}\zhat[j]{i}\log \pi_{1} + \left(1-\zhat[j]{i}\right)\log\left( 1-\pi_{1} \right).
+        +\sum_{i=1}^{n}\zhat[j]{i}\log\left( 1-\pi_{1} \right) + \left(1-\zhat[j]{i}\right)\log\pi_{1}.
     \end{align}
     The function $Q\left( \mbs{\theta}\mid \mbs{\theta}^{(j)} \right)$ is to be differentiated with respect to the parameters $\mbs{\theta}$ and be equated to zero in order to solve for the critical points.
     \begin{align}
@@ -264,15 +265,15 @@
             \pi_{1}
         }
         &=
-        \sum_{i=1}^{n}\zhat[j]{i}\f{1}{\pi_{1}} + \left(1-\zhat[j]{i}\right)\f{1}{ 1-\pi_{1}}\\
+        \sum_{i=1}^{n}-\zhat[j]{i}\f{1}{1-\pi_{1}} + \left(1-\zhat[j]{i}\right)\f{1}{ \pi}\\
         &=
-        \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n}\zhat[j]{i}\left( 1-\pi_{1} \right)+ \pi_{1}\left(1-\zhat[j]{i}\right)\\
+        \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n} (1-\pi_{1})\left(1-\zhat[j]{i}\right) -\zhat[j]{i}\pi_{1}\\
         &=
-        \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n}\left(\zhat[j]{i} - \pi_{1}\right).
+        \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n}\left(1 -\zhat[j]{i} - \pi_{1}\right).
     \end{align}
     Equating to $0$ and solving for $\pi_{1}$ gives the next estimate
     \begin{align}
-        \hat{\pi}_{1}^{(j+1)} &= \f{1}{n}\sum_{i=1}^{n}\zhat[j]{i}.
+        \hat{\pi}_{1}^{(j+1)} &= 1 - \f{1}{n}\sum_{i=1}^{n}\zhat[j]{i}.
     \end{align}
 
     \bibliography{references}
