@@ -3,7 +3,7 @@
 \usepackage{amro-common}
 
 \title{Expectation Maximization -- An Example}
-\author{Amro Al~Baali}
+\author{Amro Al-Baali}
 
 \makeatletter
 \renewcommand{\maketitle}{%
@@ -44,7 +44,7 @@
     \maketitle
     
     \section{Notations}
-    Let the observations be $X=\left\{ x_{1}, \ldots, x_{n} \right\}$ be the set of realizations of the random variable $\rv{x}\in\rnums$. Additionally, let $Z = \left\{ z_{1},\ldots, z_{n} \right\}$ be the set of realizations of $\rv{z}\in\left\{ 0,1 \right\}$ which is the ``missing'' data of the problem.\footnote{The data is ``missing'' in the sense that, if this data was available, then the problem would be significantly simplified.} The set of complete data is denoted by $Y = {X, Z}$.
+    Let the observations be $X=\left\{ x_{1}, \ldots, x_{n} \right\}$ be the set of realizations of the random variable $\rv{x}\in\rnums$. Additionally, let $Z = \left\{ z_{1},\ldots, z_{n} \right\}$ be the set of realizations of $\rv{z}\in\left\{ 0,1 \right\}$ which is the ``missing'' data of the problem.\footnote{The data is ``missing'' in the sense that, if this data was available, then the problem would be significantly simplified.} The set of complete data is denoted by $Y = \{X, Z\}$.
     Furthermore, let the two PDF that $\rv{x}$ is distributed from be denoted by $\pdf[1]{x; \mbs{\lambda}_{1}}$ and $\pdf[2]{x; \mbs{\lambda}_{2}}$, where $\mbs{\lambda}_{i}$ is the set of parameters for each of the two PDFs.
 
     The set of unknown parameters are $\mbs{\theta} = \left\{ \mbs{\lambda}_{1}, \mbs{\lambda}_{2}, \pi_{1} \right\}$.
@@ -226,7 +226,7 @@
     The function $Q\left( \mbs{\theta}\mid \mbs{\theta}^{(j)} \right)$ is to be differentiated with respect to the parameters $\mbs{\theta}$ and be equated to zero in order to solve for the critical points.
     \begin{align}
         \pd{
-            Q\left( \mbs{\theta}\mid{\theta}^{(j)} \right)
+            Q\left( \mbs{\theta}\mid \mbs{\theta}^{(j)} \right)
         }{
             \lambda_{1}
         }
@@ -237,7 +237,7 @@
         -
         \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) x_{i}.
     \end{align}
-    Equating to partial derivative to zero and solving for $\lambda_{1}$ gives the next estimate
+    Equating the partial derivative to zero and solving for $\lambda_{1}$ gives the next estimate
     \begin{align}
         \hat{\lambda}_{1}^{(j+1)} 
         &= 
@@ -279,3 +279,20 @@
     \bibliography{references}
     \bibliographystyle{plainnat}
 \end{document}
+
+\begin{figure}[Hhtbp]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{}
+        \caption{subfig_1_caption>}
+        \label{fig:subfig_1_label}
+    \end{subfigure}
+    %
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\textwidth]{}
+        \caption{subfig_2_caption}
+        \label{fig:subfig_2_label}
+    \end{subfigure}
+    \caption{fig_caption}
+    \label{fig:fig_label}
+\end{figure}
