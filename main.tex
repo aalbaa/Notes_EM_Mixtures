@@ -186,14 +186,22 @@
 
     
     \begin{blueBox}
-        From here onwards, the notation 
+        The expectation step is then        
         \begin{align}
             \label{eq:xhat notation def}
             \zhat[j]{i} &\coloneqq  
-            \expect{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}
+            \expect{\rv{z}_{i} \mid x_{i}, \mbs{\theta}^{(j)}}\\
+            &= \f{
+                \pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}\left(1-\pi_{1}^{(j)}\right)
+            }{
+                \pi_{1}^{(j)}\pdf[1]{x_{i}; \mbs{\lambda}^{(j)}} + \left( 1-\pi_{1}^{(j)} \right)\pdf[2]{x_{i}; \mbs{\lambda}_{2}^{(j)}}
+            }.
         \end{align}
-        will be used.
+        where $\zhat[j]{i}$ will be used from now on for brevity.
     \end{blueBox}
+
+
+
     \section{Maximization step}
     Now that the missing data $\rv{z}_{i}$ is estimated in the expectation step, the next step is to estimate a new set of parameters $\mbs{\theta}^{(j+1)}$ using maximum likelihood (ML) estimator on the log-likelihood function of the complete \emph{estimated} data set $\hat{Y} = \left\{ X, \hat{Z}^{(j)} \right\}$. \footnote{Note that $\hat{Z}^{(j)} = \left\{ \zhat[j]{1},\ldots, \zhat[j]{n} \right\}$.}
 
@@ -238,25 +246,29 @@
         \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) x_{i}.
     \end{align}
     Equating the partial derivative to zero and solving for $\lambda_{1}$ gives the next estimate
-    \begin{align}
-        \hat{\lambda}_{1}^{(j+1)} 
-        &= 
-        \f{
-            \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right)
-        }{
-            \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) x_{i}  
-        }.
-    \end{align}
-    The similar procedure can be done for $\lambda_{2}$ which gives the expression
-    \begin{align}
-        \hat{\lambda}_{2}^{(j+1)} 
-        &= 
-        \f{
-            \sum_{i=1}^{n} \zhat[j]{i}
-        }{
-            \sum_{i=1}^{n}\zhat[j]{i} x_{i}  
-        }.
-    \end{align}
+    \begin{blackBox}
+        \begin{align}
+            \hat{\lambda}_{1}^{(j+1)} 
+            &= 
+            \f{
+                \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right)
+            }{
+                \sum_{i=1}^{n} \left(1-\zhat[j]{i}\right) x_{i}  
+            }.
+        \end{align}
+    \end{blackBox}
+    \begin{blackBox}
+        The similar procedure can be done for $\lambda_{2}$ which gives the expression
+        \begin{align}
+            \hat{\lambda}_{2}^{(j+1)} 
+            &= 
+            \f{
+                \sum_{i=1}^{n} \zhat[j]{i}
+            }{
+                \sum_{i=1}^{n}\zhat[j]{i} x_{i}  
+            }.
+        \end{align}
+    \end{blackBox}
     Now, differentiate $Q\left(\mbs{\theta}\mid\mbs{\theta}^{(j)}\right)$ with respect to $\pi_{1}$.
     \begin{align}
         \pd{
@@ -272,9 +284,11 @@
         \f{1}{\pi_{1}\left( 1-\pi_{1} \right)}\sum_{i=1}^{n}\left(1 -\zhat[j]{i} - \pi_{1}\right).
     \end{align}
     Equating to $0$ and solving for $\pi_{1}$ gives the next estimate
-    \begin{align}
-        \hat{\pi}_{1}^{(j+1)} &= 1 - \f{1}{n}\sum_{i=1}^{n}\zhat[j]{i}.
-    \end{align}
+    \begin{blackBox}    
+        \begin{align}
+            \hat{\pi}_{1}^{(j+1)} &= 1 - \f{1}{n}\sum_{i=1}^{n}\zhat[j]{i}.
+        \end{align}
+    \end{blackBox}        
 
     \bibliography{references}
     \bibliographystyle{plainnat}
